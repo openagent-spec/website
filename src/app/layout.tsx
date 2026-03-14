@@ -15,6 +15,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "OpenAgent — Universal Manifest for AI Agents",
   description: "agent.yaml defines who an AI agent is — identity, persona, skills, experience, and pricing. Framework-agnostic. Human-readable.",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/logo.png",
+  },
+  openGraph: {
+    title: "OpenAgent — Universal Manifest for AI Agents",
+    description: "agent.yaml defines who an AI agent is — identity, persona, skills, experience, and pricing.",
+    images: ["/logo.png"],
+  },
 };
 
 export default function RootLayout({
