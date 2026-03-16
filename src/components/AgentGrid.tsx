@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useState, useMemo } from "react";
 import type { Agent } from "@/lib/registry";
 
+const PAGE_SIZE = 24;
+
 export function AgentGrid({
   agents,
   categories,
@@ -15,6 +17,7 @@ export function AgentGrid({
 }) {
   const [search, setSearch] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
+  const [page, setPage] = useState(1);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -25,6 +28,12 @@ export function AgentGrid({
       return true;
     });
   }, [agents, search, selectedCategories]);
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  // Reset page when filters change
+  useMemo(() => { setPage(1); }, [search, selectedCategories]);
 
   function toggleCategory(cat: string) {
     setSelectedCategories((prev) => {
@@ -65,16 +74,21 @@ export function AgentGrid({
         ))}
       </div>
 
-      {/* Count */}
-      <div className="text-gray-400 text-sm mb-6">
-        {filtered.length === total
-          ? `${total} Agents`
-          : `${filtered.length} of ${total} Agents`}
+      {/* Count + pagination info */}
+      <div className="flex items-center justify-between text-gray-400 text-sm mb-6">
+        <span>
+          {filtered.length === total
+            ? `${total} Agents`
+            : `${filtered.length} of ${total} Agents`}
+        </span>
+        {totalPages > 1 && (
+          <span>Page {page} of {totalPages}</span>
+        )}
       </div>
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map((agent) => (
+        {paged.map((agent) => (
           <Link
             key={agent.id}
             href={`/agents/${agent.id}`}
@@ -98,6 +112,39 @@ export function AgentGrid({
 
       {filtered.length === 0 && (
         <div className="text-center text-gray-500 py-20">No agents found.</div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-10">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page <= 1}
+            className="px-4 py-2 rounded-lg border border-white/10 text-sm transition disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10"
+          >
+            ← Prev
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <button
+              key={p}
+              onClick={() => setPage(p)}
+              className={`w-9 h-9 rounded-lg text-sm transition ${
+                p === page
+                  ? "bg-blue-500/20 border border-blue-500/40 text-blue-400"
+                  : "border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              {p}
+            </button>
+          ))}
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages}
+            className="px-4 py-2 rounded-lg border border-white/10 text-sm transition disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10"
+          >
+            Next →
+          </button>
+        </div>
       )}
     </>
   );
