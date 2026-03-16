@@ -53,7 +53,7 @@ export function AgentGrid({
           placeholder="Search agents..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition"
+          className="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition"
         />
       </div>
 
@@ -65,8 +65,8 @@ export function AgentGrid({
             onClick={() => toggleCategory(cat)}
             className={`px-3 py-1.5 text-sm rounded-full border transition ${
               selectedCategories.has(cat)
-                ? "bg-blue-500/20 border-blue-500/40 text-blue-400"
-                : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
+                ? "bg-blue-500/20 border-blue-500/40 text-blue-600 dark:text-blue-400"
+                : "bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white"
             }`}
           >
             {cat}
@@ -75,7 +75,7 @@ export function AgentGrid({
       </div>
 
       {/* Count + pagination info */}
-      <div className="flex items-center justify-between text-gray-400 text-sm mb-6">
+      <div className="flex items-center justify-between text-gray-600 dark:text-gray-400 text-sm mb-6">
         <span>
           {filtered.length === total
             ? `${total} Agents`
@@ -92,16 +92,16 @@ export function AgentGrid({
           <Link
             key={agent.id}
             href={`/agents/${agent.id}`}
-            className="p-5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition group"
+            className="p-5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-gray-50 dark:hover:bg-white/10 shadow-sm dark:shadow-none transition group"
           >
             <div className="flex items-start gap-3">
               <span className="text-3xl shrink-0">{agent.emoji}</span>
               <div className="min-w-0">
-                <h3 className="font-semibold text-white group-hover:text-blue-400 transition truncate">
+                <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition truncate">
                   {agent.name}
                 </h3>
-                <p className="text-gray-400 text-sm mt-1 line-clamp-2">{agent.description}</p>
-                <span className="inline-block mt-2 px-2 py-0.5 text-xs rounded-full bg-white/10 text-gray-300">
+                <p className="text-gray-600 dark:text-gray-400 text-sm mt-1 line-clamp-2">{agent.description}</p>
+                <span className="inline-block mt-2 px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300">
                   {agent.category}
                 </span>
               </div>
@@ -120,7 +120,7 @@ export function AgentGrid({
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page <= 1}
-            className="px-4 py-2 rounded-lg border border-white/10 text-sm transition disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10"
+            className="px-4 py-2 rounded-lg border border-gray-200 dark:border-white/10 text-sm transition disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-white/10"
           >
             ← Prev
           </button>
@@ -130,8 +130,8 @@ export function AgentGrid({
               onClick={() => setPage(p)}
               className={`w-9 h-9 rounded-lg text-sm transition ${
                 p === page
-                  ? "bg-blue-500/20 border border-blue-500/40 text-blue-400"
-                  : "border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
+                  ? "bg-blue-500/20 border border-blue-500/40 text-blue-600 dark:text-blue-400"
+                  : "border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white"
               }`}
             >
               {p}
@@ -140,7 +140,7 @@ export function AgentGrid({
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
-            className="px-4 py-2 rounded-lg border border-white/10 text-sm transition disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10"
+            className="px-4 py-2 rounded-lg border border-gray-200 dark:border-white/10 text-sm transition disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-white/10"
           >
             Next →
           </button>
