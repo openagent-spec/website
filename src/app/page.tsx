@@ -1,23 +1,13 @@
 import Link from "next/link";
+import { Nav } from "@/components/Nav";
+import { fetchRegistry } from "@/lib/registry";
 
-export default function Home() {
+export default async function Home() {
+  const registry = await fetchRegistry();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white">
-      {/* Nav */}
-      <nav className="fixed top-0 w-full z-50 border-b border-white/10 bg-gray-950/80 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto flex items-center justify-between px-6 h-16">
-          <div className="flex items-center gap-2">
-            <img src="/logo.svg" alt="OpenAgent" className="w-8 h-8" />
-            <span className="font-bold text-lg">OpenAgent</span>
-          </div>
-          <div className="flex items-center gap-6 text-sm">
-            <a href="#features" className="text-gray-400 hover:text-white transition">Features</a>
-            <a href="#spec" className="text-gray-400 hover:text-white transition">Spec</a>
-            <a href="#sdks" className="text-gray-400 hover:text-white transition">SDKs</a>
-            <a href="https://github.com/openagent-spec" className="text-gray-400 hover:text-white transition" target="_blank">GitHub</a>
-          </div>
-        </div>
-      </nav>
+      <Nav />
 
       {/* Hero */}
       <section className="pt-32 pb-20 px-6">
@@ -235,6 +225,19 @@ marketplace:
               <code className="text-sm text-gray-400">npm install @openagent-spec/sdk</code>
             </a>
           </div>
+        </div>
+      </section>
+
+      {/* Browse Agents */}
+      <section className="pb-20 px-6">
+        <div className="max-w-3xl mx-auto text-center">
+          <Link
+            href="/agents"
+            className="inline-flex items-center gap-2 px-6 py-3 text-lg font-medium rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition group"
+          >
+            Browse {registry.total} agents
+            <span className="text-blue-400 group-hover:translate-x-1 transition-transform">→</span>
+          </Link>
         </div>
       </section>
 
