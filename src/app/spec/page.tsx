@@ -10,7 +10,15 @@ export const metadata: Metadata = {
 };
 
 export default async function SpecPage() {
-  const markdown = await fetchSpec();
+  let markdown = await fetchSpec();
+
+  // Strip the first H1 heading and the status/version blockquote
+  // since we render those in the page header
+  if (markdown) {
+    markdown = markdown
+      .replace(/^#\s+.+\n+/, "")  // Remove first H1
+      .replace(/^(>\s+\*\*.*\n)+\n*/m, "");  // Remove leading blockquotes (status, version, etc.)
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 text-gray-900 dark:text-white">
