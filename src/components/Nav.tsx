@@ -17,9 +17,9 @@ export function Nav() {
           <Link href="/agents" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition">
             Agents
           </Link>
-          <a href="https://github.com/openagent-spec/spec" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition" target="_blank">
+          <Link href="/spec" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition">
             Spec
-          </a>
+          </Link>
           <a href="https://github.com/openagent-spec" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition" target="_blank">
             GitHub
           </a>

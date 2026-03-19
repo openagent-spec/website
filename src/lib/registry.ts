@@ -109,6 +109,16 @@ export async function fetchAgentReadme(path: string): Promise<string> {
   return res.text();
 }
 
+const SPEC_BASE = "https://raw.githubusercontent.com/openagent-spec/spec/main";
+
+export async function fetchSpec(): Promise<string> {
+  const res = await fetch(`${SPEC_BASE}/SPEC.md`, {
+    next: { revalidate: 3600 },
+  });
+  if (!res.ok) return "";
+  return res.text();
+}
+
 export async function fetchAgentSoul(path: string): Promise<string> {
   const res = await fetch(`${REGISTRY_BASE}/${path}/SOUL.md`, {
     next: { revalidate: 3600 },
