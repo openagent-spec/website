@@ -110,7 +110,7 @@ export default async function AgentDetailPage({ params }: Props) {
           </div>
 
           {/* Content + Sidebar */}
-          <div className={`grid gap-8 ${hasSidebar ? "lg:grid-cols-[1fr_280px]" : ""}`}>
+          <div className={`grid gap-8 ${hasSidebar ? "lg:grid-cols-[minmax(0,1fr)_280px]" : ""}`}>
             <AgentTabs readme={readme} soul={soul} yaml={yaml} />
 
             {hasSidebar && (

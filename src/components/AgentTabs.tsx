@@ -56,15 +56,15 @@ export function AgentTabs({
       )}
 
       {active === "Manifest" && (
-        <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-gray-900/50 overflow-hidden shadow-sm dark:shadow-none">
+        <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-gray-900/50 overflow-hidden shadow-sm dark:shadow-none min-w-0">
           <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-gray-900/80">
             <div className="w-3 h-3 rounded-full bg-red-500/80" />
             <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
             <div className="w-3 h-3 rounded-full bg-green-500/80" />
             <span className="ml-2 text-sm text-gray-500">agent.yaml</span>
           </div>
-          <pre className="p-6 text-sm leading-relaxed overflow-x-auto">
-            <code className="text-gray-700 dark:text-gray-300">{yaml || "No agent.yaml available."}</code>
+          <pre className="p-6 text-sm leading-relaxed overflow-x-auto max-w-full">
+            <code className="text-gray-700 dark:text-gray-300 break-words whitespace-pre-wrap">{yaml || "No agent.yaml available."}</code>
           </pre>
         </div>
       )}
