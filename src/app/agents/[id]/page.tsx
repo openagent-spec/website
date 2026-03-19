@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Nav } from "@/components/Nav";
 import { AgentTabs } from "@/components/AgentTabs";
-import { AgentSidebar } from "@/components/AgentSidebar";
 import {
   fetchRegistry,
   fetchAgentYaml,
@@ -25,6 +24,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${agent.emoji} ${agent.name} — OpenAgent`,
     description: agent.description,
   };
+}
+
+function SidebarRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex justify-between items-center text-sm">
+      <span className="text-gray-500">{label}</span>
+      <span>{children}</span>
+    </div>
+  );
 }
 
 export default async function AgentDetailPage({ params }: Props) {
@@ -67,13 +75,93 @@ export default async function AgentDetailPage({ params }: Props) {
           </div>
 
           {/* Content + Sidebar */}
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
-            <AgentTabs readme={readme} soul={soul} yaml={yaml} />
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_280px]">
+            <AgentTabs readme={readme} soul={soul} yaml={yaml} manifest={manifest} />
 
+            {/* Slim sidebar — meta info only */}
             {manifest && (
-              <div className="lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto">
-                <AgentSidebar manifest={manifest} />
-              </div>
+              <aside className="lg:sticky lg:top-24 lg:self-start space-y-4">
+                <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 shadow-sm dark:shadow-none p-5">
+                  <div className="space-y-3">
+                    {manifest.version && (
+                      <SidebarRow label="Version">
+                        <span className="inline-block px-2 py-1 text-xs rounded-full bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-500/30">
+                          v{manifest.version}
+                        </span>
+                      </SidebarRow>
+                    )}
+                    {manifest.author && (
+                      <SidebarRow label="Author">
+                        {manifest.repository ? (
+                          <a href={manifest.repository} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline text-sm">
+                            {manifest.author}
+                          </a>
+                        ) : (
+                          <span className="text-sm">{manifest.author}</span>
+                        )}
+                      </SidebarRow>
+                    )}
+                    {manifest.license && (
+                      <SidebarRow label="License">
+                        <span className="text-sm">{manifest.license}</span>
+                      </SidebarRow>
+                    )}
+                    {manifest.homepage && (
+                      <SidebarRow label="Homepage">
+                        <a href={manifest.homepage} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline text-sm truncate max-w-[140px] inline-block">
+                          {manifest.homepage.replace(/^https?:\/\//, "")}
+                        </a>
+                      </SidebarRow>
+                    )}
+                    {manifest.repository && (
+                      <SidebarRow label="Repository">
+                        <a href={manifest.repository} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline text-sm truncate max-w-[140px] inline-block">
+                          {manifest.repository.replace(/^https?:\/\//, "")}
+                        </a>
+                      </SidebarRow>
+                    )}
+                    {manifest.marketplace?.category && (
+                      <SidebarRow label="Category">
+                        <span className="inline-block px-2 py-1 text-xs rounded-full bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-500/30">
+                          {manifest.marketplace.category}
+                        </span>
+                      </SidebarRow>
+                    )}
+                  </div>
+                </div>
+
+                {/* Tags */}
+                {manifest.marketplace?.tags && manifest.marketplace.tags.length > 0 && (
+                  <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 shadow-sm dark:shadow-none p-5">
+                    <div className="text-xs text-gray-500 uppercase tracking-wider mb-3">Tags</div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {manifest.marketplace.tags.map((tag) => (
+                        <span key={tag} className="inline-block px-2 py-1 text-xs rounded-full bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Pricing */}
+                {manifest.marketplace?.pricing && (manifest.marketplace.pricing.model || manifest.marketplace.pricing.base || manifest.marketplace.pricing.trial != null) && (
+                  <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 shadow-sm dark:shadow-none p-5">
+                    <div className="text-xs text-gray-500 uppercase tracking-wider mb-3">Pricing</div>
+                    <div className="space-y-2">
+                      {manifest.marketplace.pricing.model && (
+                        <SidebarRow label="Model"><span className="text-sm">{manifest.marketplace.pricing.model}</span></SidebarRow>
+                      )}
+                      {manifest.marketplace.pricing.base && (
+                        <SidebarRow label="Base"><span className="text-sm">{manifest.marketplace.pricing.base}</span></SidebarRow>
+                      )}
+                      {manifest.marketplace.pricing.trial != null && (
+                        <SidebarRow label="Trial"><span className="text-sm">{manifest.marketplace.pricing.trial} days</span></SidebarRow>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </aside>
             )}
           </div>
         </div>
