@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import type { AgentManifest } from "@/lib/registry";
 
 const tabs = ["Overview", "Persona", "Capabilities", "Experience", "Manifest"] as const;
@@ -330,7 +331,7 @@ export function AgentTabs({
       {active === "Overview" && (
         <div className={proseClasses}>
           {readme ? (
-            <ReactMarkdown>{readme}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{readme}</ReactMarkdown>
           ) : (
             <p className="text-gray-500">No README available.</p>
           )}
@@ -340,7 +341,7 @@ export function AgentTabs({
       {active === "Persona" && (
         <div className={proseClasses}>
           {soul ? (
-            <ReactMarkdown>{soul}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{soul}</ReactMarkdown>
           ) : (
             <p className="text-gray-500">No SOUL.md available.</p>
           )}

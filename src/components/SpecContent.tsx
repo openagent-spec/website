@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 
@@ -23,7 +24,7 @@ function extractToc(markdown: string): TocItem[] {
     }
     if (inCodeBlock) continue;
 
-    const match = line.match(/^(#{2,3})\s+(.+)/);
+    const match = line.match(/^(#{2})\s+(.+)/);
     if (match) {
       const text = match[2].replace(/[`*_~]/g, "").trim();
       const id = text
@@ -86,6 +87,7 @@ export function SpecContent({ markdown }: { markdown: string }) {
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_240px]">
       <div className={proseClasses}>
         <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeSlug, [rehypeAutolinkHeadings, { behavior: "wrap" }]]}
         >
           {markdown}
