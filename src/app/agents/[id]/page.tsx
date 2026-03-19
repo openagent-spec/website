@@ -3,11 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Nav } from "@/components/Nav";
 import { AgentTabs } from "@/components/AgentTabs";
+import { AgentSidebar } from "@/components/AgentSidebar";
 import {
   fetchRegistry,
   fetchAgentYaml,
   fetchAgentReadme,
   fetchAgentSoul,
+  parseAgentYaml,
 } from "@/lib/registry";
 
 interface Props {
@@ -38,52 +40,7 @@ export default async function AgentDetailPage({ params }: Props) {
     fetchAgentSoul(agent.path),
   ]);
 
-  // Parse some info from yaml for sidebar
-  const yamlLines = yaml.split("\n");
-  const getField = (key: string) => {
-    const line = yamlLines.find((l) => l.startsWith(`${key}:`));
-    if (!line) return null;
-    return line.slice(key.length + 1).trim().replace(/^["']|["']$/g, "");
-  };
-
-  const author = getField("author") || getField("  name");
-  const license = getField("license");
-
-  // Extract marketplace pricing
-  const pricingIdx = yamlLines.findIndex((l) => l.trim().startsWith("pricing:"));
-  let pricing: Record<string, string> = {};
-  if (pricingIdx !== -1) {
-    for (let i = pricingIdx + 1; i < yamlLines.length; i++) {
-      const line = yamlLines[i];
-      if (line.trim() === "" || (!line.startsWith("    ") && !line.startsWith("\t\t"))) break;
-      const match = line.trim().match(/^(\w+):\s*(.+)/);
-      if (match) pricing[match[1]] = match[2].replace(/^["']|["']$/g, "");
-    }
-  }
-
-  // Extract tags
-  const tagsIdx = yamlLines.findIndex((l) => l.trim() === "tags:");
-  let tags: string[] = [];
-  if (tagsIdx !== -1) {
-    for (let i = tagsIdx + 1; i < yamlLines.length; i++) {
-      const line = yamlLines[i].trim();
-      if (line.startsWith("- ")) tags.push(line.slice(2).replace(/^["']|["']$/g, ""));
-      else break;
-    }
-  }
-
-  // Extract frameworks
-  const frameworkIdx = yamlLines.findIndex((l) => l.trim() === "frameworks:");
-  let frameworks: string[] = [];
-  if (frameworkIdx !== -1) {
-    for (let i = frameworkIdx + 1; i < yamlLines.length; i++) {
-      const line = yamlLines[i].trim();
-      if (line.startsWith("- ")) frameworks.push(line.slice(2).replace(/^["']|["']$/g, ""));
-      else break;
-    }
-  }
-
-  const hasSidebar = author || license || Object.keys(pricing).length > 0 || tags.length > 0 || frameworks.length > 0;
+  const manifest = parseAgentYaml(yaml);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 text-gray-900 dark:text-white">
@@ -110,75 +67,13 @@ export default async function AgentDetailPage({ params }: Props) {
           </div>
 
           {/* Content + Sidebar */}
-          <div className={`grid gap-8 ${hasSidebar ? "lg:grid-cols-[minmax(0,1fr)_280px]" : ""}`}>
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
             <AgentTabs readme={readme} soul={soul} yaml={yaml} />
 
-            {hasSidebar && (
-              <aside className="space-y-6">
-                {/* Info card */}
-                <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 shadow-sm dark:shadow-none p-5 space-y-4">
-                  {author && (
-                    <div>
-                      <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Author</div>
-                      <div className="text-sm">{author}</div>
-                    </div>
-                  )}
-                  {license && (
-                    <div>
-                      <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">License</div>
-                      <div className="text-sm">{license}</div>
-                    </div>
-                  )}
-                  {Object.keys(pricing).length > 0 && (
-                    <div>
-                      <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Pricing</div>
-                      <div className="text-sm space-y-1">
-                        {Object.entries(pricing).map(([k, v]) => (
-                          <div key={k}>
-                            <span className="text-gray-600 dark:text-gray-400">{k}:</span> {v}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Tags */}
-                {tags.length > 0 && (
-                  <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 shadow-sm dark:shadow-none p-5">
-                    <div className="text-xs text-gray-500 uppercase tracking-wider mb-3">Tags</div>
-                    <div className="flex flex-wrap gap-2">
-                      {tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-1 text-xs rounded-full bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Frameworks */}
-                {frameworks.length > 0 && (
-                  <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 shadow-sm dark:shadow-none p-5">
-                    <div className="text-xs text-gray-500 uppercase tracking-wider mb-3">
-                      Frameworks
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {frameworks.map((fw) => (
-                        <span
-                          key={fw}
-                          className="px-2 py-1 text-xs rounded-full bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-500/30"
-                        >
-                          {fw}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </aside>
+            {manifest && (
+              <div className="lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto">
+                <AgentSidebar manifest={manifest} />
+              </div>
             )}
           </div>
         </div>

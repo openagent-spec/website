@@ -1,3 +1,5 @@
+import yaml from "js-yaml";
+
 const REGISTRY_BASE = "https://raw.githubusercontent.com/openagent-spec/registry/main";
 
 export interface Agent {
@@ -7,6 +9,73 @@ export interface Agent {
   description: string;
   category: string;
   path: string;
+}
+
+export interface AgentManifest {
+  id: string;
+  name: string;
+  version: string;
+  description: string;
+  emoji?: string;
+  avatar?: string;
+  author?: string;
+  license?: string;
+  homepage?: string;
+  repository?: string;
+  persona: {
+    style: string;
+    tone: string;
+    language?: string[];
+    principles?: string[];
+  };
+  skills?: Array<{ name: string; version?: string }>;
+  adapters?: {
+    frameworks?: Array<{ name: string; version?: string; native?: boolean; adapter?: string }>;
+    tools?: {
+      required?: Array<{ name: string; reason?: string }>;
+      recommended?: Array<{ name: string; reason?: string }>;
+      optional?: Array<{ name: string; reason?: string }>;
+    };
+    agent_apps?: Array<{ name: string; role: string; required?: boolean; alternatives?: string[] }>;
+    services?: Array<{ name: string; type: string; version?: string; auth?: string }>;
+  };
+  model?: {
+    minimum?: string;
+    recommended?: string;
+    context_window?: string;
+  };
+  experience?: {
+    level?: string;
+    packs?: number;
+    domains?: string[];
+    highlights?: Array<{ id: string; summary: string; difficulty?: string }>;
+  };
+  collaboration?: {
+    can_delegate?: boolean;
+    can_receive?: boolean;
+    protocols?: string[];
+  };
+  runtime?: {
+    platform?: string[];
+    dependencies?: string[];
+    sandbox?: string;
+  };
+  marketplace?: {
+    category?: string;
+    tags?: string[];
+    pricing?: { model?: string; base?: string; trial?: number };
+    stats?: { users?: number; rating?: number; tasks_completed?: number };
+  };
+}
+
+export function parseAgentYaml(raw: string): AgentManifest | null {
+  try {
+    const parsed = yaml.load(raw) as AgentManifest;
+    if (!parsed || typeof parsed !== "object") return null;
+    return parsed;
+  } catch {
+    return null;
+  }
 }
 
 export interface Registry {
